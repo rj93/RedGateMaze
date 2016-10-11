@@ -24,6 +24,22 @@
 
 	<body>
 		<div class="container">
+			
+			<div id="controls">
+
+				<div class="input-group col-md-2">
+					<span class="input-group-addon" id="width-addon">Width</span>
+					<input type="number" class="form-control" id="width" min="5" max="50" value="20" aria-describedby="width-addon">
+				</div>
+
+				<div class="input-group col-md-2">
+					<span class="input-group-addon" id="height-addon">Height</span>
+					<input type="number" class="form-control" id="height" min="5" max="50" value="20" aria-describedby="height-addon">
+				</div>
+
+				<button type="button" class="btn btn-primary" onclick="maze.generate()">Generate</button>
+
+			</div>
 			<div id="maze"></div>
 		</div>
 	</body>
@@ -35,14 +51,19 @@
 				this.width = width;
 				this.height = height;
 				this.grid = [];
-				for(var i=0; i<x; i++) {
-				    this.grid[i] = [];
-				    for(var j=0; j<y; j++) {
-				        this.grid[i][j] = new Cell(i, j);
-				    }
+				for(var i=0; i<width; i++) {
+					this.grid[i] = [];
+					for(var j=0; j<height; j++) {
+						this.grid[i][j] = new Cell(i, j);
+					}
 				}
+				this.start = this.grid[0][0];
+				this.end = this.grid[width-1][height-1];
 
-				this.grid[0][0].removeWallTop() // start cell
+				this.start.removeWallTop();
+				this.start.addClass("start");
+				this.end.removeWallBottom();
+				this.end.addClass("end");
 			}
 
 			generate() {
@@ -53,38 +74,33 @@
 
 				while(stack.length > 0){
 					cell = stack.pop();
-					console.log("current: " + cell.x + ", " + cell.y)
 					cell.visit();
 
-					var neighbours = this.getNeighbours(cell);
-					console.log("No of neighbours: " + neighbours.length);
-					if (neighbours.length > 1){
-						stack.push(cell);
-					}
+					if (!(cell.x == this.end.x && cell.y == this.end.y)){ // without this check there is the possibility for the end cell to be missing three walls
 
-					var next = neighbours[Math.floor(Math.random() * neighbours.length)];
-					if (next){
-						console.log("next: " + next.x + ", " + next.y);
-						stack.push(next);
-						if (cell.getX() < next.getX()){
-							// next is below
-							cell.removeWallBottom();
-							next.removeWallTop();
-						} else if (cell.getX() > next.getX()){
-							// next is above
-							cell.removeWallTop();
-							next.removeWallBottom();
-						} else if (cell.getY() < next.getY()){
-							// next is to the right
-							cell.removeWallRight();
-							next.removeWallLeft();
-						} else {
-							// next is to the left
-							cell.removeWallLeft();
-							next.removeWallRight();
+						var neighbours = this.getNeighbours(cell);
+						if (neighbours.length > 1){ // JS array doesn't have a peek, so need to re-add the cell if it still has unexplored neighbours
+							stack.push(cell);
+						}
+
+						var next = neighbours[Math.floor(Math.random() * neighbours.length)];
+						if (next){
+							stack.push(next);
+							if (cell.getX() < next.getX()){ // next is below
+								cell.removeWallBottom();
+								next.removeWallTop();
+							} else if (cell.getX() > next.getX()){ // next is above
+								cell.removeWallTop();
+								next.removeWallBottom();
+							} else if (cell.getY() < next.getY()){ // next is to the right
+								cell.removeWallRight();
+								next.removeWallLeft();
+							} else { // next is to the left
+								cell.removeWallLeft();
+								next.removeWallRight();
+							}
 						}
 					}
-
 				}
 
 			}
@@ -100,7 +116,7 @@
 						neighbours.push(this.grid[x-1][y]);
 					}
 				} 
-				if (x != this.height - 1) {
+				if (x != this.width - 1) {
 					// add bottom
 					if (!this.grid[x+1][y].getVisited()){
 						neighbours.push(this.grid[x+1][y]);
@@ -113,7 +129,7 @@
 						neighbours.push(this.grid[x][y-1]);
 					}
 				} 
-				if (y != this.width - 1){
+				if (y != this.height - 1){
 					// add right
 					if (!this.grid[x][y+1].getVisited()){
 						neighbours.push(this.grid[x][y+1]);
@@ -157,52 +173,63 @@
 
 			removeWallTop() {
 				this.wallTop = false;
-				this.addCellClass("no-wall-top");
+				this.addClass("no-wall-top");
 			}
 
 			removeWallBottom() {
 				this.wallBottom = false;
-				this.addCellClass("no-wall-bottom");
+				this.addClass("no-wall-bottom");
 			}
 
 			removeWallLeft() {
 				this.wallLeft = false;
-				this.addCellClass("no-wall-left");
+				this.addClass("no-wall-left");
 			}
 
 			removeWallRight() {
 				this.wallRight = false;
-				this.addCellClass("no-wall-right");
+				this.addClass("no-wall-right");
 			}
 
-			addCellClass(classToAdd) {
+			addClass(classToAdd) {
 				$("#cell-" + this.x + "-" + this.y + ".cell").addClass(classToAdd);
 			}
 
 		}
 
 			
-		var x = 10;
-		var y = 10;
+		var width, height;
+		var maze;
+
 
 		$(document).ready(function() {
-			for(var i = 0; i < x; i++) {
-				var row = $("<div class='row' id='row-"+i+"'></div>");
+			initMaze();
+		});
+
+		$("#width").on('input', function() {
+			$("#maze").empty();
+			initMaze();
+		});
+
+		$("#height").on('input', function() {
+			$("#maze").empty();
+			initMaze();
+		})
+
+		function initMaze(){
+			width = $("#width").val();
+			height = $("#height").val();
+			$("#maze").css("min-width", width*10+"px"); // stop maze losing its structure on resize
+			for(var x = 0; x < width; x++) {
+				var row = $("<div class='row' id='row-"+x+"'></div>");
 				row.appendTo("#maze")
-				for(var j = 0; j < y; j++) {
-					var unit = $("<div class='cell' id='cell-"+i+"-"+j+"'></div>");
-					unit.appendTo("#row-"+i);
+				for(var y = 0; y < height; y++) {
+					var unit = $("<div class='cell' id='cell-"+x+"-"+y+"'></div>");
+					unit.appendTo("#row-"+x);
 				}
 			}
-
-			var maze = new Maze(x, y);
-			maze.generate();
-
-
-			// var test = new Cell(1,1);
-			// console.log(maze.getNeighbours(test));
-			// console.log(maze.getNeighbours(test).length);
-		});
+			maze = new Maze(width, height);
+		}
 
 	</script>
 
