@@ -1,0 +1,37 @@
+#maze {
+	margin: 10px;
+}
+
+.maze-row {
+
+}
+
+.cell {
+    background-color: blue;
+    height: 30px;
+    width: 30px;
+    /*margin: 1px;*/
+    display: inline-block;
+    float: left;
+    border: 1px solid red;
+}
+
+.test-class {
+	background-color: red !important;
+}
+
+.no-wall-top {
+	border-top: none !important;
+}
+
+.no-wall-bottom {
+	border-bottom: none !important;
+}
+
+.no-wall-left {
+	border-left: none !important;
+}
+
+.no-wall-right {
+	border-right: none !important;
+}

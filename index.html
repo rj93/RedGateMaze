@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex, nofollow">
+	<meta name="revisit-after" content="7 days">
+
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/website.css">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet"> 
+
+	<link rel="stylesheet" href="./fonts/font-awesome/css/font-awesome.min.css">
+
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script type="text/javascript" src="./js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="./js/website.js"></script>
+
+	<title>Red Gate Maze Challenge</title>
+
+	
+</head>
+
+	<body>
+		<div class="container">
+			<div id="maze"></div>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+
+		class Maze {
+			constructor (width, height) {
+				this.width = width;
+				this.height = height;
+				this.grid = [];
+				for(var i=0; i<x; i++) {
+				    this.grid[i] = [];
+				    for(var j=0; j<y; j++) {
+				        this.grid[i][j] = new Cell(i, j);
+				    }
+				}
+
+				this.grid[0][0].removeWallTop() // start cell
+			}
+
+			generate() {
+				var stack = [];
+				var cell, neighbours;
+
+				stack.push(this.grid[0][0]);
+
+				while(stack.length > 0){
+					cell = stack.pop();
+					console.log("current: " + cell.x + ", " + cell.y)
+					cell.visit();
+
+					var neighbours = this.getNeighbours(cell);
+					console.log("No of neighbours: " + neighbours.length);
+					if (neighbours.length > 1){
+						stack.push(cell);
+					}
+
+					var next = neighbours[Math.floor(Math.random() * neighbours.length)];
+					if (next){
+						console.log("next: " + next.x + ", " + next.y);
+						stack.push(next);
+						if (cell.getX() < next.getX()){
+							// next is below
+							cell.removeWallBottom();
+							next.removeWallTop();
+						} else if (cell.getX() > next.getX()){
+							// next is above
+							cell.removeWallTop();
+							next.removeWallBottom();
+						} else if (cell.getY() < next.getY()){
+							// next is to the right
+							cell.removeWallRight();
+							next.removeWallLeft();
+						} else {
+							// next is to the left
+							cell.removeWallLeft();
+							next.removeWallRight();
+						}
+					}
+
+				}
+
+			}
+
+			getNeighbours(cell) {
+				var x = cell.getX();
+				var y = cell.getY();
+
+				var neighbours = []
+				if (x != 0) {
+					// add top
+					if (!this.grid[x-1][y].getVisited()){
+						neighbours.push(this.grid[x-1][y]);
+					}
+				} 
+				if (x != this.height - 1) {
+					// add bottom
+					if (!this.grid[x+1][y].getVisited()){
+						neighbours.push(this.grid[x+1][y]);
+					}
+				}
+				
+				if (y != 0) {
+					// add left
+					if (!this.grid[x][y-1].getVisited()){
+						neighbours.push(this.grid[x][y-1]);
+					}
+				} 
+				if (y != this.width - 1){
+					// add right
+					if (!this.grid[x][y+1].getVisited()){
+						neighbours.push(this.grid[x][y+1]);
+					}
+				}
+
+				return neighbours;
+			}
+		}
+
+		class Cell {
+			constructor(x, y) {
+				this.x = x;
+				this.y = y;
+				this.visited = false;
+				this.wallTop = true;
+				this.wallBottom = true;
+				this.wallLeft = true;
+				this.wallRight = true;
+			}
+
+			getX() {
+				return this.x;
+			}
+
+			getY() {
+				return this.y;
+			}
+
+			getCoordinates() {
+				return {'x': this.x, 'y': this.y};
+			}
+
+			visit() {
+				this.visited = true;
+			}
+
+			getVisited() {
+				return this.visited;
+			}
+
+			removeWallTop() {
+				this.wallTop = false;
+				this.addCellClass("no-wall-top");
+			}
+
+			removeWallBottom() {
+				this.wallBottom = false;
+				this.addCellClass("no-wall-bottom");
+			}
+
+			removeWallLeft() {
+				this.wallLeft = false;
+				this.addCellClass("no-wall-left");
+			}
+
+			removeWallRight() {
+				this.wallRight = false;
+				this.addCellClass("no-wall-right");
+			}
+
+			addCellClass(classToAdd) {
+				$("#cell-" + this.x + "-" + this.y + ".cell").addClass(classToAdd);
+			}
+
+		}
+
+			
+		var x = 10;
+		var y = 10;
+
+		$(document).ready(function() {
+			for(var i = 0; i < x; i++) {
+				var row = $("<div class='row' id='row-"+i+"'></div>");
+				row.appendTo("#maze")
+				for(var j = 0; j < y; j++) {
+					var unit = $("<div class='cell' id='cell-"+i+"-"+j+"'></div>");
+					unit.appendTo("#row-"+i);
+				}
+			}
+
+			var maze = new Maze(x, y);
+			maze.generate();
+
+
+			// var test = new Cell(1,1);
+			// console.log(maze.getNeighbours(test));
+			// console.log(maze.getNeighbours(test).length);
+		});
+
+	</script>
+
+</html>
