@@ -7,17 +7,21 @@
 }
 
 .cell {
-    background-color: blue;
-    height: 30px;
-    width: 30px;
-    /*margin: 1px;*/
-    display: inline-block;
-    float: left;
-    border: 1px solid red;
+	min-height: 10px;
+	min-width: 10px;
+	max-height: 30px;
+	max-width: 30px;
+
+	height: 4vw;
+	width: 4vw;
+
+	display: inline-block;
+	float: left;
+	border: 1px solid red;
 }
 
-.test-class {
-	background-color: red !important;
+.start, .end {
+	background-color: lightgrey;
 }
 
 .no-wall-top {
