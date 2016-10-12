@@ -43,7 +43,7 @@
 
 						<button type="button" class="btn btn-primary" onclick="generate()">Generate</button>
 	
-						<button type="button" class="btn btn-warning" onclick="initMaze()">Reset</button>
+						<button type="button" class="btn btn-warning" onclick="resetMaze()">Reset</button>
 		
 				</div>
 
@@ -211,8 +211,7 @@
 		}
 
 			
-		var width, height;
-		var maze;
+		var width, height, maze, reset;
 
 
 		$(document).ready(function() {
@@ -245,18 +244,29 @@
 
 		function generate() {
 
-			var cell = maze.stack[maze.stack.length - 1];
-			cell.addClass("current");
-			
-			setTimeout(function() {
-				maze.iter();
-				if (maze.stack.length > 0) {
-					generate();
-				}
-				cell.removeClass("current");
-			}, 25)
+			if (!reset){
+				var cell = maze.stack[maze.stack.length - 1];
+				cell.addClass("current");
+				
+				setTimeout(function() {
+					maze.iter();
+					if (maze.stack.length > 0) {
+						generate();
+					}
+					cell.removeClass("current");
+				}, 25)
+			} else {
+				reset = false;
+			}
 
 		}
+
+		function resetMaze() {
+			console.log("reset");
+			reset = true;
+			initMaze();
+		}
+
 	</script>
 
 </html>
