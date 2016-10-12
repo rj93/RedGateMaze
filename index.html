@@ -41,7 +41,7 @@
 						</div>
 					</div>
 
-						<button type="button" class="btn btn-primary" onclick="maze.generate()">Generate</button>
+						<button type="button" class="btn btn-primary" onclick="generate()">Generate</button>
 	
 						<button type="button" class="btn btn-warning" onclick="initMaze()">Reset</button>
 		
@@ -72,52 +72,45 @@
 				this.start.addClass("start");
 				this.end.removeWallBottom();
 				this.end.addClass("end");
+
+				this.stack = [];
+				this.stack.push(this.start);
+				this.current = this.start;
 			}
 
-			generate() {
-				var stack = [];
-				var iteration = 0;
+			iter(){
 				var cell, neighbours;
 
-				stack.push(this.grid[0][0]);
+				cell = this.stack.pop();
+				cell.visit();
 
-				while(stack.length > 0){
-					cell = stack.pop();
-					cell.visit();
+				if (!(cell.row == this.end.row && cell.col == this.end.col)){ // without this check there is the possibility for the end cell to be missing three walls
 
-					if (!(cell.row == this.end.row && cell.col == this.end.col)){ // without this check there is the possibility for the end cell to be missing three walls
+					var neighbours = this.getNeighbours(cell);
+					if (neighbours.length > 1){ // JS array doesn't have a peek, so need to re-add the cell if it still has unexplored neighbours
+						this.stack.push(cell);
+					}
 
-						var neighbours = this.getNeighbours(cell);
-						if (neighbours.length > 1){ // JS array doesn't have a peek, so need to re-add the cell if it still has unexplored neighbours
-							stack.push(cell);
-						}
-
-						var next = neighbours[Math.floor(Math.random() * neighbours.length)];
-						if (next){
-							stack.push(next);
-							if (cell.getRow() < next.getRow()){ // next is below
-								cell.removeWallBottom();
-								next.removeWallTop();
-							} else if (cell.getRow() > next.getRow()){ // next is above
-								cell.removeWallTop();
-								next.removeWallBottom();
-							} else if (cell.getCol() < next.getCol()){ // next is to the right
-								cell.removeWallRight();
-								next.removeWallLeft();
-							} else { // next is to the left
-								cell.removeWallLeft();
-								next.removeWallRight();
-							}
+					var next = neighbours[Math.floor(Math.random() * neighbours.length)];
+					if (next){
+						this.stack.push(next);
+						if (cell.getRow() < next.getRow()){ // next is below
+							cell.removeWallBottom();
+							next.removeWallTop();
+						} else if (cell.getRow() > next.getRow()){ // next is above
+							cell.removeWallTop();
+							next.removeWallBottom();
+						} else if (cell.getCol() < next.getCol()){ // next is to the right
+							cell.removeWallRight();
+							next.removeWallLeft();
+						} else { // next is to the left
+							cell.removeWallLeft();
+							next.removeWallRight();
 						}
 					}
-					this.doSetTimeout(iteration);
-					iteration++;
 				}
+				
 
-			}
-
-			doSetTimeout(i) {
-				setTimeout(function() { console.log(i); }, 500);
 			}
 
 			getNeighbours(cell) {
@@ -211,6 +204,10 @@
 				$("#cell-" + this.row + "-" + this.col + ".cell").addClass(classToAdd);
 			}
 
+			removeClass(classToAdd) {
+				$("#cell-" + this.row + "-" + this.col + ".cell").removeClass(classToAdd);
+			}
+
 		}
 
 			
@@ -246,6 +243,20 @@
 			maze = new Maze(width, height);
 		}
 
+		function generate() {
+
+			var cell = maze.stack[maze.stack.length - 1];
+			cell.addClass("current");
+			
+			setTimeout(function() {
+				maze.iter();
+				if (maze.stack.length > 0) {
+					generate();
+				}
+				cell.removeClass("current");
+			}, 25)
+
+		}
 	</script>
 
 </html>

@@ -43,6 +43,9 @@
 .visited {
 	background-color: #e0e0e0;
 }
+.current {
+	background-color: #b053db !important;
+}
 
 .no-wall-top {
 	border-top: none !important;
