@@ -1,9 +1,10 @@
-#maze {
-	margin: 10px;
+#controls {
+	padding: 40px 15px;
 }
 
-.maze-row {
-
+#maze {
+	/*margin: 10px;*/
+	padding: 40px 15px;
 }
 
 .cell {
@@ -20,22 +21,35 @@
 	border: 1px solid red;
 }
 
-.start, .end {
-	background-color: lightgrey;
+#maze .row:first-child .cell {
+	border-top-width: 2px;
+}
+#maze .row:last-child .cell {
+	border-bottom-width: 2px;
+}
+#maze .row .cell:first-child {
+	border-left-width: 2px;
+}
+#maze .row .cell:last-child {
+	border-right-width: 2px;
+}
+
+.start {
+	background-color: #4bf442;
+}
+.end {
+	background-color: #f44842;
 }
 
 .no-wall-top {
 	border-top: none !important;
 }
-
 .no-wall-bottom {
 	border-bottom: none !important;
 }
-
 .no-wall-left {
 	border-left: none !important;
 }
-
 .no-wall-right {
 	border-right: none !important;
 }

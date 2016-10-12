@@ -26,20 +26,28 @@
 		<div class="container">
 			
 			<div id="controls">
+				<div class="row">
+					<div class="col-xs-4 col-md-2">
+						<div class="input-group">
+							<span class="input-group-addon" id="width-addon">Width</span>
+							<input type="number" class="form-control" id="width" min="5" max="50" value="20" aria-describedby="width-addon">
+						</div>
+					</div>
 
-				<div class="input-group col-md-2">
-					<span class="input-group-addon" id="width-addon">Width</span>
-					<input type="number" class="form-control" id="width" min="5" max="50" value="20" aria-describedby="width-addon">
+					<div class="col-xs-4 col-md-2">
+						<div class="input-group">
+							<span class="input-group-addon" id="height-addon">Height</span>
+							<input type="number" class="form-control" id="height" min="5" max="50" value="20" aria-describedby="height-addon">
+						</div>
+					</div>
+
+						<button type="button" class="btn btn-primary" onclick="maze.generate()">Generate</button>
+	
+						<button type="button" class="btn btn-warning" onclick="initMaze()">Reset</button>
+		
 				</div>
 
-				<div class="input-group col-md-2">
-					<span class="input-group-addon" id="height-addon">Height</span>
-					<input type="number" class="form-control" id="height" min="5" max="50" value="20" aria-describedby="height-addon">
-				</div>
-
-				<button type="button" class="btn btn-primary" onclick="maze.generate()">Generate</button>
-
-			</div>
+				<div class="row">
 			<div id="maze"></div>
 		</div>
 	</body>
@@ -207,16 +215,15 @@
 		});
 
 		$("#width").on('input', function() {
-			$("#maze").empty();
 			initMaze();
 		});
 
 		$("#height").on('input', function() {
-			$("#maze").empty();
 			initMaze();
 		})
 
 		function initMaze(){
+			$("#maze").empty();
 			width = $("#width").val();
 			height = $("#height").val();
 			$("#maze").css("min-width", width*10+"px"); // stop maze losing its structure on resize
