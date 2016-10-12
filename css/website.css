@@ -1,3 +1,10 @@
+/*.center {
+    margin: auto;
+    width: 50%;
+    border: 3px solid green;
+    padding: 10px;
+}*/
+
 #controls {
 	padding: 40px 15px;
 }
@@ -5,6 +12,7 @@
 #maze {
 	/*margin: 10px;*/
 	padding: 40px 15px;
+	margin: auto;
 }
 
 .cell {
