@@ -35,10 +35,13 @@
 }
 
 .start {
-	background-color: #4bf442;
+	background-color: #4bf442 !important;
 }
 .end {
-	background-color: #f44842;
+	background-color: #eea236 !important;
+}
+.visited {
+	background-color: #e0e0e0;
 }
 
 .no-wall-top {
