@@ -41,9 +41,11 @@
 						</div>
 					</div>
 
-						<button type="button" class="btn btn-primary" onclick="generate()">Generate</button>
-	
-						<button type="button" class="btn btn-warning" onclick="resetMaze()">Reset</button>
+					<button id="generate-button" type="button" class="btn btn-primary" onclick="generate()">Generate</button>
+
+					<button id="draw-button" type="button" class="btn btn-primary" onclick="draw()">Draw</button>
+
+					<button type="button" class="btn btn-warning" onclick="resetMaze()">Reset</button>
 		
 				</div>
 
@@ -58,6 +60,9 @@
 			constructor (width, height) {
 				this.width = width;
 				this.height = height;
+				this.completed = false;
+				this.started = false;
+
 				this.grid = [];
 				for(var row=0; row<height; row++) {
 					this.grid[row] = [];
@@ -74,41 +79,53 @@
 				this.end.addClass("end");
 
 				this.stack = [];
-				this.stack.push(this.start);
-				this.current = this.start;
+				this.stack.push(this.start);		
+			}
+
+			generate() {
+				while(!this.completed){
+					this.iter();
+				}
 			}
 
 			iter(){
 				var cell, neighbours;
+				this.started = true;
 
-				cell = this.stack.pop();
-				cell.visit();
+				if (!this.completed){
+					cell = this.stack.pop();
+					cell.visit();
 
-				if (!(cell.row == this.end.row && cell.col == this.end.col)){ // without this check there is the possibility for the end cell to be missing three walls
+					if (!(cell.row == this.end.row && cell.col == this.end.col)){ // without this check there is the possibility for the end cell to be missing three walls
 
-					var neighbours = this.getNeighbours(cell);
-					if (neighbours.length > 1){ // JS array doesn't have a peek, so need to re-add the cell if it still has unexplored neighbours
-						this.stack.push(cell);
-					}
+						var neighbours = this.getNeighbours(cell);
+						if (neighbours.length > 1){ // JS array doesn't have a peek, so need to re-add the cell if it still has unexplored neighbours
+							this.stack.push(cell);
+						}
 
-					var next = neighbours[Math.floor(Math.random() * neighbours.length)];
-					if (next){
-						this.stack.push(next);
-						if (cell.getRow() < next.getRow()){ // next is below
-							cell.removeWallBottom();
-							next.removeWallTop();
-						} else if (cell.getRow() > next.getRow()){ // next is above
-							cell.removeWallTop();
-							next.removeWallBottom();
-						} else if (cell.getCol() < next.getCol()){ // next is to the right
-							cell.removeWallRight();
-							next.removeWallLeft();
-						} else { // next is to the left
-							cell.removeWallLeft();
-							next.removeWallRight();
+						var next = neighbours[Math.floor(Math.random() * neighbours.length)];
+						if (next){
+							this.stack.push(next);
+							if (cell.getRow() < next.getRow()){ // next is below
+								cell.removeWallBottom();
+								next.removeWallTop();
+							} else if (cell.getRow() > next.getRow()){ // next is above
+								cell.removeWallTop();
+								next.removeWallBottom();
+							} else if (cell.getCol() < next.getCol()){ // next is to the right
+								cell.removeWallRight();
+								next.removeWallLeft();
+							} else { // next is to the left
+								cell.removeWallLeft();
+								next.removeWallRight();
+							}
 						}
 					}
+					if (this.stack.length == 0){
+						this.completed = true;
+					}
 				}
+				
 				
 
 			}
@@ -242,28 +259,47 @@
 			maze = new Maze(width, height);
 		}
 
-		function generate() {
+		function generate(){
+			$("#generate-button").prop("disabled",true);
+			$("#draw-button").prop("disabled",true);
+
+			if (maze.started){
+				reset = true;
+			}
+			maze.generate();
+		}
+
+		function draw() {
 
 			if (!reset){
+				$("#draw-button").prop("disabled",true);
+
 				var cell = maze.stack[maze.stack.length - 1];
 				cell.addClass("current");
 				
 				setTimeout(function() {
 					maze.iter();
-					if (maze.stack.length > 0) {
-						generate();
+					if (!maze.completed) {
+						draw();
+					} else {
+						$("#generate-button").prop("disabled",true);
 					}
 					cell.removeClass("current");
-				}, 25)
+				}, 25);
+
 			} else {
 				reset = false;
 			}
-
 		}
 
 		function resetMaze() {
-			console.log("reset");
-			reset = true;
+			console.log("resetMaze");
+			$("#generate-button").prop("disabled",false);
+			$("#draw-button").prop("disabled",false);
+
+			if (maze.started && !maze.completed){
+				reset = true;
+			}
 			initMaze();
 		}
 
