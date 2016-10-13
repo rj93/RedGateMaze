@@ -69,9 +69,6 @@
 				this.wallBottom = true;
 				this.wallLeft = true;
 				this.wallRight = true;
-				this.g = 0;
-				this.h = 0;
-				this.f = 0;
 			}
 
 			getRow() {
@@ -301,29 +298,34 @@
 				if (this.open.length > 0){
 					cellIndex = this.getBestIndex();
 					cell = this.open[cellIndex];
+					cell.addClass("current");
 
 					if (!(cell.row == this.end.row && cell.col == this.end.col)){
 						this.open.splice(cellIndex, 1);
 						this.closed.push(cell);
-						cell.visit();
-						cell.addClass("current");
 
 						neighbours = maze.getValidNeigbours(cell);
 						for (var i = 0; i < neighbours.length; i++ ){
-							if (!neighbours[i].visited){
+							if (this.closed.indexOf(neighbours[i]) < 0){
 								neighbours[i].g = cell.g + 1;
 								neighbours[i].h = this.estimate(neighbours[i]);
 								neighbours[i].f = neighbours[i].g + neighbours[i].h;
+								neighbours[i].parent = cell;
 								this.open.push(neighbours[i]);
 							}
 						}
-						console.log("OPEN LIST")
-						for (var i = 0; i < this.open.length; i++){
-							console.log("row = " + this.open[i].row + " col = " + this.open[i].col + " f = " + this.open[i].f + " g = " + this.open[i].g + " h = " + this.open[i].h);
-						}
-						console.log("\n\n");
+
 					} else {
 						this.completed = true;
+						var ret = [];
+						var current = cell;
+						while(current.parent) {
+							current.addClass("path");
+							ret.push(current);
+							current = current.parent;
+						}
+						current.addClass("path");
+						ret = ret.reverse();
 					}
 				}
 			}
@@ -433,16 +435,16 @@
 				solver = new AStar(maze);
 			}
 			if (!reset){
-				console.log(solver.getBestIndex());
-				var cell = maze[solver.getBestIndex()];
-				cell.addClass("current");
+				// console.log(solver.getBestIndex());
+				// var cell = maze[solver.getBestIndex()];
+				// cell.addClass("current");
 				
 				setTimeout(function() {
 					solver.iter();
 					if (!solver.completed) {
 						drawSolution();
 					}
-					cell.removeClass("current");
+					// cell.removeClass("current");
 				}, 25);
 
 			} else {

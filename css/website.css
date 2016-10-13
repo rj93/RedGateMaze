@@ -46,6 +46,9 @@
 .current {
 	background-color: #b053db !important;
 }
+.path {
+	background-color: #000000 !important
+}
 
 .no-wall-top {
 	border-top: none !important;
