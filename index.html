@@ -47,7 +47,7 @@
 
 					<button type="button" class="btn btn-warning" onclick="resetMaze()">Reset</button>
 
-					<button type="button" class="btn btn-primary" onclick="solve()">Step</button>
+					<button type="button" class="btn btn-primary" onclick="step()">Step</button>
 
 					<button type="button" class="btn btn-primary" onclick="drawSolution()">Draw</button>
 		
@@ -69,6 +69,10 @@
 				this.wallBottom = true;
 				this.wallLeft = true;
 				this.wallRight = true;
+
+				this.g = 0;
+				this.h = 0;
+				this.f = 0;
 			}
 
 			getRow() {
@@ -261,25 +265,17 @@
 				}
 				return neighbours;
 			}
-
-			resetVisited(){
-				for(var row=0; row<height; row++) {
-					for(var col=0; col<width; col++) {
-						this.grid[row][col].visited = false;
-					}
-				}
-			}
 		}
 
 		class AStar {
 			constructor (maze) {
-				maze.resetVisited();
-
 				this.maze = maze;
 				this.start = maze.start;
 				this.end = maze.end;
+				this.solved = false;
 				this.completed = false;
 
+				this.path = [];
 				this.closed = [];
 				this.open = [];
 				this.open.push(this.start);
@@ -287,7 +283,7 @@
 			}
 
 			solve() {
-				while (this.open.length > 0){
+				while (!completed){
 					iter();
 				}
 			}
@@ -295,12 +291,13 @@
 			iter() {
 				var cellIndex, cell, neighbours;
 
-				if (this.open.length > 0){
+				if (!this.solved){
 					cellIndex = this.getBestIndex();
 					cell = this.open[cellIndex];
+					cell.removeClass("open");
 					cell.addClass("current");
 
-					if (!(cell.row == this.end.row && cell.col == this.end.col)){
+					if (!(cell.row == this.end.row && cell.col == this.end.col)){ // if current cell is not the end
 						this.open.splice(cellIndex, 1);
 						this.closed.push(cell);
 
@@ -311,21 +308,23 @@
 								neighbours[i].h = this.estimate(neighbours[i]);
 								neighbours[i].f = neighbours[i].g + neighbours[i].h;
 								neighbours[i].parent = cell;
+								neighbours[i].addClass("open");
 								this.open.push(neighbours[i]);
 							}
 						}
+					} else {
+						this.solved = true;
+						this.path = this.getPath(cell);
+						console.log(this.path);
+					}
+				}
 
+				if (this.solved){
+					if (this.path.length > 0){
+						this.path[0].addClass("path");
+						this.path.splice(0, 1);
 					} else {
 						this.completed = true;
-						var ret = [];
-						var current = cell;
-						while(current.parent) {
-							current.addClass("path");
-							ret.push(current);
-							current = current.parent;
-						}
-						current.addClass("path");
-						ret = ret.reverse();
 					}
 				}
 			}
@@ -344,6 +343,17 @@
 
 			estimate(cell) {
 				return Math.abs(this.end.row - cell.row) + Math.abs(this.end.col - cell.col);
+			}
+
+			getPath(cell){
+				var path  = [];
+				var current = cell;
+				while(current.parent) {
+					path.push(current);
+					current = current.parent;
+				}
+				path.push(current);
+				return path;
 			}
 
 		}
@@ -423,7 +433,7 @@
 			initMaze();
 		}
 
-		function solve() {
+		function step() {
 			if (!solver){
 				solver = new AStar(maze);
 			}

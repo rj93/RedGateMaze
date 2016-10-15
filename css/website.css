@@ -34,7 +34,7 @@
 	border-right-width: 2px;
 }
 
-.start {
+.start, .open {
 	background-color: #4bf442 !important;
 }
 .end {
