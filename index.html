@@ -315,7 +315,6 @@
 					} else {
 						this.solved = true;
 						this.path = this.getPath(cell);
-						console.log(this.path);
 					}
 				}
 
@@ -325,6 +324,15 @@
 						this.path.splice(0, 1);
 					} else {
 						this.completed = true;
+
+						for (var i = 0; i < this.closed.length; i++){
+							this.closed[i].removeClass("current");
+							this.closed[i].addClass("current-fade");
+						}
+						for (var i = 0; i < this.open.length; i++){
+							this.open[i].removeClass("open");
+							this.open[i].addClass("open-fade");
+						}
 					}
 				}
 			}

@@ -62,3 +62,49 @@
 .no-wall-right {
 	border-right: none !important;
 }
+
+@-webkit-keyframes current-fade-out {
+	0%		{ background-color: #b053db; }
+	100%	{ background-color: #e0e0e0; }
+}
+@-moz-keyframes current-fade-out {
+	0%		{ background-color: #b053db; }
+	100%	{ background-color: #e0e0e0; }
+}
+@-o-keyframes current-fade-out {
+	0%		{ background-color: #b053db; }
+	100%	{ background-color: #e0e0e0; }
+}
+@keyframes current-fade-out {
+	0%		{ background-color: #b053db; }
+	100%	{ background-color: #e0e0e0; }
+}
+.current-fade {
+	-webkit-animation:	current-fade-out 5s; /* Safari 4+ */
+	-moz-animation:		current-fade-out 5s; /* Fx 5+ */
+	-o-animation:		current-fade-out 5s; /* Opera 12+ */
+	animation:			current-fade-out 5s; /* IE 10+ */
+}
+
+@-webkit-keyframes open-fade-out {
+	0%		{ background-color: #4bf442; }
+	100%	{ background-color: #e0e0e0; }
+}
+@-moz-keyframes open-fade-out {
+	0%		{ background-color: #4bf442; }
+	100%	{ background-color: #e0e0e0; }
+}
+@-o-keyframes open-fade-out {
+	0%		{ background-color: #4bf442; }
+	100%	{ background-color: #e0e0e0; }
+}
+@keyframes open-fade-out {
+	0%		{ background-color: #4bf442; }
+	100%	{ background-color: #e0e0e0; }
+}
+.open-fade {
+	-webkit-animation:	open-fade-out 5s; /* Safari 4+ */
+	-moz-animation:		open-fade-out 5s; /* Fx 5+ */
+	-o-animation:		open-fade-out 5s; /* Opera 12+ */
+	animation:			open-fade-out 5s; /* IE 10+ */
+}
