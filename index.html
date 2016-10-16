@@ -27,34 +27,58 @@
 			
 			<div id="controls">
 				<div class="row">
-					<div class="col-xs-4 col-md-2">
-						<div class="input-group">
-							<span class="input-group-addon" id="width-addon">Width</span>
-							<input type="number" class="form-control" id="width" min="5" max="50" value="5" aria-describedby="width-addon">
+					<div class="col-md-4">
+						<div class="panel panel-default">
+							<div class="panel-heading">Maze</div>
+							<div class="panel-body">
+
+								<div class="row">
+									<div class="col-md-6">
+										<div class="input-group">
+											<span class="input-group-addon" id="width-addon">Width</span>
+											<input type="number" class="form-control" id="width" min="5" max="50" value="5" aria-describedby="width-addon">
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="input-group">
+											<span class="input-group-addon" id="height-addon">Height</span>
+											<input type="number" class="form-control" id="height" min="5" max="50" value="5" aria-describedby="height-addon">
+										</div>
+									</div>
+								</div>
+
+								<br>
+								<button id="generate-button" type="button" class="btn btn-primary" onclick="generate()">Generate</button>
+								<button id="maze-draw-button" type="button" class="btn btn-primary" onclick="drawMaze()">Draw</button>
+								<button id="maze-step-button" type="button" class="btn btn-primary" onclick="stepMaze()">Step</button>
+								<button id="maze-reset-button" type="button" class="btn btn-warning" onclick="resetMaze()" disabled>Reset</button>
+							</div>
 						</div>
 					</div>
-
-					<div class="col-xs-4 col-md-2">
-						<div class="input-group">
-							<span class="input-group-addon" id="height-addon">Height</span>
-							<input type="number" class="form-control" id="height" min="5" max="50" value="5" aria-describedby="height-addon">
-						</div>
-					</div>
-
-					<button id="generate-button" type="button" class="btn btn-primary" onclick="generate()">Generate</button>
-
-					<button id="draw-button" type="button" class="btn btn-primary" onclick="draw()">Draw</button>
-
-					<button type="button" class="btn btn-warning" onclick="resetMaze()">Reset</button>
-
-					<button type="button" class="btn btn-primary" onclick="step()">Step</button>
-
-					<button type="button" class="btn btn-primary" onclick="drawSolution()">Draw</button>
-		
 				</div>
-
+				
 				<div class="row">
-			<div id="maze"></div>
+					<div class="col-md-4">
+						<div class="panel panel-default">
+							<div class="panel-heading">A* Search</div>
+							<div class="panel-body">
+								<button id="solve-button" type="button" class="btn btn-primary" onclick="solve()" disabled>Solve</button>
+								<button id="solver-draw-button" type="button" class="btn btn-primary" onclick="drawSolution()" disabled>Draw</button>
+								<button id="solver-step-button" type="button" class="btn btn-primary" onclick="stepSolution()" disabled>Step</button>
+								<button id="solver-reset-button" type="button" class="btn btn-warning" onclick="resetSolver()" disabled>Reset</button>
+							</div>
+						</div>
+					</div>
+				</div>
+					
+
+		
+			</div>
+
+			<div class="row">
+				<div id="maze"></div>
+			</div>
 		</div>
 	</body>
 
@@ -283,8 +307,8 @@
 			}
 
 			solve() {
-				while (!completed){
-					iter();
+				while (!this.completed){
+					this.iter();
 				}
 			}
 
@@ -399,19 +423,31 @@
 		}
 
 		function generate(){
-			$("#generate-button").prop("disabled",true);
-			$("#draw-button").prop("disabled",true);
-
 			if (maze.started){
 				reset = true;
 			}
 			maze.generate();
+			disableMaze();
+			enableSolver();
 		}
 
-		function draw() {
+		function stepMaze() {
+			console.log("stepMaze() " + maze.completed);
+			maze.stack[maze.stack.length - 1].removeClass("current");
+			maze.iter();
+			if (!maze.completed){
+				maze.stack[maze.stack.length - 1].addClass("current");
+			} else {
+				disableMaze();
+				enableSolver();
+			}
+		}
+
+		function drawMaze() {
 
 			if (!reset){
-				$("#draw-button").prop("disabled",true);
+				$("#maze-draw-button").prop("disabled",true);
+				$("#maze-step-button").prop("disabled",true);
 
 				var cell = maze.stack[maze.stack.length - 1];
 				cell.addClass("current");
@@ -419,9 +455,10 @@
 				setTimeout(function() {
 					maze.iter();
 					if (!maze.completed) {
-						draw();
+						drawMaze();
 					} else {
-						$("#generate-button").prop("disabled",true);
+						disableMaze();
+						enableSolver();
 					}
 					cell.removeClass("current");
 				}, 25);
@@ -432,42 +469,82 @@
 		}
 
 		function resetMaze() {
-			$("#generate-button").prop("disabled",false);
-			$("#draw-button").prop("disabled",false);
-
 			if (maze.started && !maze.completed){
 				reset = true;
 			}
 			initMaze();
+			enableMaze();
+			disableSolver();
 		}
 
-		function step() {
-			if (!solver){
-				solver = new AStar(maze);
-			}
+		function solve() {
+			$("#solver-reset-button").prop("disabled",false);
+			solver.solve();
+			disableSolver(false);
+		}
+
+		function stepSolution() {
+			$("#solver-reset-button").prop("disabled",false);
 			solver.iter();
+
+			if(solver.completed){
+				disableSolver(false);
+			}
 		}
 
 		function drawSolution() {
-			if (!solver){
-				solver = new AStar(maze);
-			}
+			$("#solver-reset-button").prop("disabled",false);
 			if (!reset){
-				// console.log(solver.getBestIndex());
-				// var cell = maze[solver.getBestIndex()];
-				// cell.addClass("current");
-				
 				setTimeout(function() {
 					solver.iter();
 					if (!solver.completed) {
 						drawSolution();
+					} else {
+						disableSolver(false);
 					}
-					// cell.removeClass("current");
 				}, 25);
-
 			} else {
 				reset = false;
 			}
+		}
+
+		function resetSolver(){
+			for(var row = 0; row < height; row++) {
+				for(var col = 0; col < width; col++) {
+					$("#cell-"+row+"-"+col).removeClass("current current-fade open open-fade path");
+				}
+			}
+			solver = new AStar(maze);
+			enableSolver();
+		}
+
+		function enableMaze(){
+			$("#generate-button").prop("disabled",false);
+			$("#maze-draw-button").prop("disabled",false);
+			$("#maze-step-button").prop("disabled",false);
+			$("#maze-reset-button").prop("disabled",true);
+		}
+
+		function disableMaze(){
+			$("#generate-button").prop("disabled",true);
+			$("#maze-draw-button").prop("disabled",true);
+			$("#maze-step-button").prop("disabled",true);
+			$("#maze-reset-button").prop("disabled",false);
+		}
+
+		function enableSolver(){
+			solver = new AStar(maze);
+			$("#solve-button").prop("disabled",false);
+			$("#solver-draw-button").prop("disabled",false);
+			$("#solver-step-button").prop("disabled",false);
+			$("#solver-reset-button").prop("disabled",true);
+		}
+
+		function disableSolver(disableReset = true){
+			$("#solve-button").prop("disabled",true);
+			$("#solver-draw-button").prop("disabled",true);
+			$("#solver-step-button").prop("disabled",true);
+			$("#solver-reset-button").prop("disabled", disableReset);
 		}
 
 	</script>
