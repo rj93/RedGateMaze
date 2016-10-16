@@ -17,16 +17,28 @@
 	<script type="text/javascript" src="./js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="./js/website.js"></script>
 
-	<title>Red Gate Maze Challenge</title>
-
-	
+	<title>Red Gate Maze Challenge</title>	
 </head>
 
 	<body>
 		<div class="container">
+			<div class="page-header">
+				<h1>Maze Generator</h1>
+			</div>
 			
 			<div id="controls">
 				<div class="row">
+					<div class="col-md-8">
+						<div id="maze"></div>
+					</div>
+
+					<!-- <div class="col-md-4">
+						<div class="panel panel-default">
+							<div class="panel-heading">Key</div>
+							<div class="panel-body"></div>
+						</div>
+					</div> -->
+
 					<div class="col-md-4">
 						<div class="panel panel-default">
 							<div class="panel-heading">Maze</div>
@@ -36,14 +48,14 @@
 									<div class="col-md-6">
 										<div class="input-group">
 											<span class="input-group-addon" id="width-addon">Width</span>
-											<input type="number" class="form-control" id="width" min="5" max="50" value="5" aria-describedby="width-addon">
+											<input type="number" class="form-control" id="width" min="5" max="50" value="20" aria-describedby="width-addon">
 										</div>
 									</div>
 
 									<div class="col-md-6">
 										<div class="input-group">
 											<span class="input-group-addon" id="height-addon">Height</span>
-											<input type="number" class="form-control" id="height" min="5" max="50" value="5" aria-describedby="height-addon">
+											<input type="number" class="form-control" id="height" min="5" max="50" value="20" aria-describedby="height-addon">
 										</div>
 									</div>
 								</div>
@@ -56,9 +68,6 @@
 							</div>
 						</div>
 					</div>
-				</div>
-				
-				<div class="row">
 					<div class="col-md-4">
 						<div class="panel panel-default">
 							<div class="panel-heading">A* Search</div>
@@ -71,13 +80,7 @@
 						</div>
 					</div>
 				</div>
-					
-
 		
-			</div>
-
-			<div class="row">
-				<div id="maze"></div>
 			</div>
 		</div>
 	</body>
@@ -327,7 +330,7 @@
 
 						neighbours = maze.getValidNeigbours(cell);
 						for (var i = 0; i < neighbours.length; i++ ){
-							if (this.closed.indexOf(neighbours[i]) < 0){
+							if (this.closed.indexOf(neighbours[i]) < 0){ // neighbour is not in closed list
 								neighbours[i].g = cell.g + 1;
 								neighbours[i].h = this.estimate(neighbours[i]);
 								neighbours[i].f = neighbours[i].g + neighbours[i].h;
@@ -359,6 +362,10 @@
 						}
 					}
 				}
+			}
+
+			getBestCell(){
+				return this.open[this.getBestIndex()];
 			}
 
 			getBestIndex(){
@@ -485,8 +492,8 @@
 
 		function stepSolution() {
 			$("#solver-reset-button").prop("disabled",false);
-			solver.iter();
 
+			solver.iter();
 			if(solver.completed){
 				disableSolver(false);
 			}

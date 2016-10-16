@@ -4,7 +4,8 @@
 
 #maze {
 	/*margin: 10px;*/
-	padding: 40px 15px;
+	/*padding: 40px 15px;*/
+	padding-bottom: 20px;
 }
 
 .cell {
