@@ -415,12 +415,14 @@
 			$("#maze").empty();
 			width = $("#width").val();
 			height = $("#height").val();
+			cellSize = $("#maze").width() / width;
 			$("#maze").css("min-width", width*10+"px"); // stop maze losing its structure on resize
 			for(var row = 0; row < height; row++) {
 				var mazeRow = $("<div class='row' id='row-"+row+"'></div>");
 				mazeRow.appendTo("#maze")
 				for(var col = 0; col < width; col++) {
 					var unit = $("<div class='cell' id='cell-"+row+"-"+col+"'></div>");
+					unit.css("width", cellSize).css("height", cellSize);
 					unit.appendTo("#row-"+row);
 				}
 			}
