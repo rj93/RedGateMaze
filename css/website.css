@@ -3,8 +3,6 @@
 }
 
 #maze {
-	/*margin: 10px;*/
-	/*padding: 40px 15px;*/
 	padding-bottom: 20px;
 }
 
@@ -13,9 +11,6 @@
 	min-width: 10px;
 	max-height: 30px;
 	max-width: 30px;
-
-	/*height: 4vw;*/
-	/*width: 4vw;*/
 
 	display: inline-block;
 	float: left;
@@ -48,7 +43,7 @@
 	background-color: #b053db;
 }
 .path {
-	background-color: #000000 !important
+	background-color: #000000 !important;
 }
 
 .no-wall-top {

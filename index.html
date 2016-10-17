@@ -67,7 +67,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-4 pull-right">
 						<div class="panel panel-default">
 							<div class="panel-heading">A* Search</div>
 							<div class="panel-body">
@@ -385,12 +385,13 @@
 
 			getPath(cell){
 				var path  = [];
-				var current = cell;
+				// var current = cell;
+				var current = cell.parent;
 				while(current.parent) {
 					path.push(current);
 					current = current.parent;
 				}
-				path.push(current);
+				// path.push(current);
 				return path;
 			}
 
@@ -532,6 +533,7 @@
 			$("#maze-step-button").prop("disabled",false);
 			$("#maze-reset-button").prop("disabled",true);
 		}
+		enableMaze();
 
 		function disableMaze(){
 			$("#generate-button").prop("disabled",true);
@@ -554,6 +556,16 @@
 			$("#solver-step-button").prop("disabled",true);
 			$("#solver-reset-button").prop("disabled", disableReset);
 		}
+		disableSolver();
+
+		$(window).resize(function() {
+			cellSize = $("#maze").width() / width;
+			for(var row = 0; row < height; row++) {
+				for(var col = 0; col < width; col++) {
+					$("#cell-" + row + "-" + col + ".cell").css("width", cellSize).css("height", cellSize);
+				}
+			}
+		});
 
 	</script>
 
